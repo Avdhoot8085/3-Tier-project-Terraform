@@ -26,15 +26,15 @@ resource "aws_subnet" "subnet_1" {
 }
 
 # create a private subnet.
-# resource "aws_subnet" "subnet_2" {
-#   vpc_id     = aws_vpc.main.id
-#   cidr_block = var.private_cidr
-#   availability_zone = "ap-south-1b"
+resource "aws_subnet" "subnet_2" {
+  vpc_id     = aws_vpc.main.id
+  cidr_block = var.private_cidr
+  availability_zone = "ap-south-1b"
 
-#   tags = {
-#     Name = "my-subnet-2"
-#   }
-# }
+  tags = {
+    Name = "my-subnet-2"
+  }
+}
 
 # create a Internet Gateway
 resource "aws_internet_gateway" "gw" {
@@ -171,7 +171,7 @@ resource "aws_instance" "jume" {
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "main"
   
-  subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_1.id]
+  subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
   tags = {
     Name = "DB subnet group"
   }
