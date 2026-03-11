@@ -144,7 +144,7 @@ resource "aws_instance" "jume" {
     cd /opt/apache-tomcat-9.0.115/webapps/
     curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
     FILE="/opt/tomcat/conf/context.xml"
-    sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.my_db.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' $FILE
+    sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' $FILE
     /opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
     /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
     
