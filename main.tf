@@ -103,20 +103,20 @@ resource "aws_security_group" "ec2_sg" {
     Name = "ec2-sg"
   }
 }
-# resource "aws_eip" "lb" {
-#   domain   = "vpc"
-#   tags = {
-#     Name = "my-eip"
-#   }
-# }
-# resource "aws_nat_gateway" "example" {
-#   allocation_id = aws_eip.lb.id
-#   subnet_id     = aws_subnet.subnet_1.id
-#   tags = {
-#     Name = "gw NAT"
-#   }
-#   depends_on = [aws_internet_gateway.gw]
-# }
+resource "aws_eip" "eip" {
+  domain   = "vpc"
+  tags = {
+    Name = "my-eip"
+  }
+}
+resource "aws_nat_gateway" "example" {
+  allocation_id = aws_eip.eip.id
+  subnet_id     = aws_subnet.subnet_1.id
+  tags = {
+    Name = "gw NAT"
+  }
+  depends_on = [aws_internet_gateway.gw]
+}
 
 
 # Create a Jume server
