@@ -104,8 +104,10 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 resource "aws_eip" "lb" {
-  instance = aws_instance.jume.id
   domain   = "vpc"
+  tags = {
+    Name = "my-eip"
+  }
 }
 resource "aws_nat_gateway" "example" {
   allocation_id = aws_eip.lb.id
