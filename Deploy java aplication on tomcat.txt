@@ -1,0 +1,63 @@
+##### How to configure java aplication on Tomcat(ec2-instance)
+
+> create one ec2 instance (add 8080 port in sg)
+> connect to cli
+> install java
+	$ sudo yum install java -y
+	$ java --version
+> install tomcat - go to google and search tomcat download 9
+	$ curl -O <paste url link>
+	$ tar -xvzf <download file name> -C /opt
+	$ cd /opt
+	$ ls 
+	$ cd <apache file name>
+	$ cd bin
+	$ ls
+	$ ./catlina.sh start			--> to start tomcat service
+> copy instance public ip and hit on browser here we can access your tomcat page
+	$ public ip:8080
+> now store your java code(.jar) inside webapps folder
+	$ curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+	$ ls 		--> here you can see your application
+now go to browser and hit public ip:8080/student 
+and fill all information inside registration form but this values are not store
+inside database that's why now we want to coonect that application to database
+> now create one RDS db instance
+	$ mysql -h <endpoint> -u <username> -p<password>
+	$ create database studentapp;
+	$ use studentapp;
+	$ create table by using below query
+	
+	CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
+	student_name VARCHAR(100) NOT NULL,
+    student_addr VARCHAR(100) NOT NULL,
+	student_age VARCHAR(3) NOT NULL,
+	student_qual VARCHAR(20) NOT NULL,
+	student_percent VARCHAR(10) NOT NULL,
+	student_year_passed VARCHAR(10) NOT NULL,
+	PRIMARY KEY (student_id)
+	);
+> to connect java aplication with database you want required one connector
+	$ cd /opt/apache file name/jar
+	$ ls 
+	$ curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/mysql-connector.jar
+	$ ls 					--> here you can see your mysql-connector.jar
+> now configure inside /opt/apache file name/conf/context.xml
+	$ vim /opt/apache file name/conf/context.xml
+	write below content on 2nd last line
+	<Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+    maxTotal="500" maxIdle="30" maxWaitMillis="1000"
+    username="admin" password="12345678" driverClassName="com.mysql.jdbc.Driver"
+    url="jdbc:mysql://endpoint:3306/studentapp?useUnicode=yes&amp;characterEncoding=utf8"/>
+ 
+ here configure your database name(studentapp),username,password,and endpoint
+> now stop tomcat and again start tomcat.
+	$ cd /opt/apacheFileName/bin
+	$ ./catlina.sh stop
+	$ ./catlina.sh start
+now your data is store inside database
+
+-----------------------------------------------------------------------------------------
+location / {
+proxy_pass http://privateIPoftomcat:8080/student/;
+}

@@ -92,6 +92,12 @@ resource "aws_security_group" "ec2_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2_sg.id]
+  }
   egress {
     from_port   = 0
     to_port     = 0
@@ -127,7 +133,7 @@ resource "aws_instance" "jume" {
     vpc_security_group_ids = [aws_security_group.ec2_sg.id]
     key_name = var.jume_server_key
     tags = {
-    Name = "Jume_server"
+    Name = "web_server"
   }
  user_data = <<-EOF
     #!/bin/bash
@@ -137,18 +143,63 @@ resource "aws_instance" "jume" {
     /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
     cd /opt/apache-tomcat-9.0.115/webapps/
     curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+    FILE="/opt/tomcat/conf/context.xml"
+    sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.my_db.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' $FILE
+    /opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
+    /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+    
     EOF
 }
 
-# Create a application server.
+# create a RDS database instance.
+resource "aws_db_instance" "mydb" {
+  allocated_storage    = 10
+  db_name              = "mydb"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t4g.micro"
+  username             = "admin"
+  password             = "admin123"
+  db_subnet_group_name = aws_subnet.subnet_2.id
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+}
+resource "aws_db_subnet_group" "db_subnet" {
+  name       = "main"
+  subnet_ids = [aws_subnet.subnet_2.id]
+
+  tags = {
+    Name = "DB subnet group"
+  }
+}
+
+# Create a database server.
 resource "aws_instance" "application_server" {
     ami = var.application_server_ami
     instance_type = var.application_server_instance_type
-    subnet_id = aws_subnet.subnet_2.id
+    subnet_id =aws_db_subnet_group.db_subnet.id
     vpc_security_group_ids = [aws_security_group.ec2_sg.id]
     key_name = var.application_server_key
     tags = {
-    Name = "Application_server"
+    Name = "DB-server"
   }
-  
+  user_data = <<-EOF
+              #!/bin/bash
+              yum install mariadb105* -y
+              systemctl start mariadb.service
+              systemctl enable mariadb.service
+              mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123
+              create database studentapp;
+              use studentapp;
+              CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
+	            student_name VARCHAR(100) NOT NULL,
+              student_addr VARCHAR(100) NOT NULL,
+  	          student_age VARCHAR(3) NOT NULL,
+	            student_qual VARCHAR(20) NOT NULL,
+	            student_percent VARCHAR(10) NOT NULL,
+  	          student_year_passed VARCHAR(10) NOT NULL,
+	            PRIMARY KEY (student_id)
+	            );
+
+
+              EOF
 }
