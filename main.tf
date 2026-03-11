@@ -26,15 +26,15 @@ resource "aws_subnet" "subnet_1" {
 }
 
 # create a private subnet.
-resource "aws_subnet" "subnet_2" {
-  vpc_id     = aws_vpc.main.id
-  cidr_block = var.private_cidr
-  availability_zone = "ap-south-1b"
+# resource "aws_subnet" "subnet_2" {
+#   vpc_id     = aws_vpc.main.id
+#   cidr_block = var.private_cidr
+#   availability_zone = "ap-south-1b"
 
-  tags = {
-    Name = "my-subnet-2"
-  }
-}
+#   tags = {
+#     Name = "my-subnet-2"
+#   }
+# }
 
 # create a Internet Gateway
 resource "aws_internet_gateway" "gw" {
@@ -113,20 +113,20 @@ resource "aws_security_group" "ec2_sg" {
     Name = "ec2-sg"
   }
 }
-resource "aws_eip" "eip" {
-  domain   = "vpc"
-  tags = {
-    Name = "my-eip"
-  }
-}
-resource "aws_nat_gateway" "example" {
-  allocation_id = aws_eip.eip.id
-  subnet_id     = aws_subnet.subnet_1.id
-  tags = {
-    Name = "gw NAT"
-  }
-  depends_on = [aws_internet_gateway.gw]
-}
+# resource "aws_eip" "eip" {
+#   domain   = "vpc"
+#   tags = {
+#     Name = "my-eip"
+#   }
+# }
+# resource "aws_nat_gateway" "example" {
+#   allocation_id = aws_eip.eip.id
+#   subnet_id     = aws_subnet.subnet_1.id
+#   tags = {
+#     Name = "gw NAT"
+#   }
+#   depends_on = [aws_internet_gateway.gw]
+# }
 
 
 # Create a Jume server
@@ -151,15 +151,27 @@ resource "aws_instance" "jume" {
     sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' $FILE
     /opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
     /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+    yum install mariadb105* -y
+    systemctl start mariadb.service
+    systemctl enable mariadb.service
+    mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123
+    create database studentapp;
+    use studentapp;
+    CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
+	  student_name VARCHAR(100) NOT NULL,
+    student_addr VARCHAR(100) NOT NULL,
+  	student_age VARCHAR(3) NOT NULL,
+	  student_qual VARCHAR(20) NOT NULL,
+	  student_percent VARCHAR(10) NOT NULL,
+  	student_year_passed VARCHAR(10) NOT NULL,
+	  PRIMARY KEY (student_id)
     
     EOF
 }
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "main"
   vpc_id      = aws_vpc.main.id
-  subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  
-
+  subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_1.id]
   tags = {
     Name = "DB subnet group"
   }
@@ -179,34 +191,34 @@ resource "aws_db_instance" "mydb" {
 }
 
 
-# Create a database server.
-resource "aws_instance" "application_server" {
-    ami = var.application_server_ami
-    instance_type = var.application_server_instance_type
-    subnet_id =aws_db_subnet_group.db_subnet.id
-    vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-    key_name = var.application_server_key
-    tags = {
-    Name = "DB-server"
-  }
-  user_data = <<-EOF
-              #!/bin/bash
-              yum install mariadb105* -y
-              systemctl start mariadb.service
-              systemctl enable mariadb.service
-              mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123
-              create database studentapp;
-              use studentapp;
-              CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
-	            student_name VARCHAR(100) NOT NULL,
-              student_addr VARCHAR(100) NOT NULL,
-  	          student_age VARCHAR(3) NOT NULL,
-	            student_qual VARCHAR(20) NOT NULL,
-	            student_percent VARCHAR(10) NOT NULL,
-  	          student_year_passed VARCHAR(10) NOT NULL,
-	            PRIMARY KEY (student_id)
-	            );
+# # Create a database server.
+# resource "aws_instance" "application_server" {
+#     ami = var.application_server_ami
+#     instance_type = var.application_server_instance_type
+#     subnet_id =aws_db_subnet_group.db_subnet.id
+#     vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+#     key_name = var.application_server_key
+#     tags = {
+#     Name = "DB-server"
+#   }
+#   user_data = <<-EOF
+#               #!/bin/bash
+#               yum install mariadb105* -y
+#               systemctl start mariadb.service
+#               systemctl enable mariadb.service
+#               mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123
+#               create database studentapp;
+#               use studentapp;
+#               CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
+# 	            student_name VARCHAR(100) NOT NULL,
+#               student_addr VARCHAR(100) NOT NULL,
+#   	          student_age VARCHAR(3) NOT NULL,
+# 	            student_qual VARCHAR(20) NOT NULL,
+# 	            student_percent VARCHAR(10) NOT NULL,
+#   	          student_year_passed VARCHAR(10) NOT NULL,
+# 	            PRIMARY KEY (student_id)
+# 	            );
 
 
-              EOF
-}
+#               EOF
+# }
