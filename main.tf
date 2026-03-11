@@ -155,7 +155,7 @@ resource "aws_instance" "jume" {
     yum install mariadb105* -y
     systemctl start mariadb.service
     systemctl enable mariadb.service
-    mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123
+    mysql -h ${aws_db_instance.mydb.endpoint} -u admin -admin123
     create database studentapp;
     use studentapp;
     CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
