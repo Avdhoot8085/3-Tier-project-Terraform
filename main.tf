@@ -129,17 +129,15 @@ resource "aws_instance" "jume" {
     tags = {
     Name = "Jume_server"
   }
-  user_data = <<-EOF
-              #!/bin/bash
-              yum install java -y
-              curl -o https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
-              tar -xzvf apache-tomcat-9.0.115.tar.gz -C /opt
-              cd /opt/apache-tomcat-9.0.115/bin
-              ./catalina.sh start
-              cd /opt/apache-tomcat-9.0.115/webapps
-              curl -o https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
-              mv student.war /opt/apache-tomcat-9.0.115/webapps
-              EOF
+ user_data = <<-EOF
+    #!/bin/bash
+    yum install java -y
+    curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
+    tar -xzvf apache-tomcat-9.0.115.tar.gz -C /opt
+    /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+    cd /opt/apache-tomcat-9.0.115/webapps/
+    curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+    EOF
 }
 
 # Create a application server.
