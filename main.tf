@@ -166,7 +166,9 @@ resource "aws_db_instance" "mydb" {
 }
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "main"
+  vpc_id      = aws_vpc.main.id
   subnet_ids = [aws_subnet.subnet_2.id]
+  
 
   tags = {
     Name = "DB subnet group"
