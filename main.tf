@@ -29,7 +29,7 @@ resource "aws_subnet" "subnet_1" {
 resource "aws_subnet" "subnet_2" {
   vpc_id     = aws_vpc.main.id
   cidr_block = var.private_cidr
-  availability_zone = "ap-south-1a"
+  availability_zone = "ap-south-1b"
 
   tags = {
     Name = "my-subnet-2"
@@ -156,7 +156,7 @@ resource "aws_instance" "jume" {
 }
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "main"
-  # vpc_id      = aws_vpc.main.id
+  vpc_id      = aws_vpc.main.id
   subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
   
 
