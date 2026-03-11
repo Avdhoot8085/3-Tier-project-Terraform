@@ -23,7 +23,7 @@ variable "jume_server_instance_type" {
 variable "jume_server_key" {
   default = "Avdhoot-key"
 }
-variable "application_server-ami" {
+variable "application_server_ami" {
   default = "ami-051a31ab2f4d498f5"
 }
 variable "application_server_instance_type" {

@@ -103,20 +103,20 @@ resource "aws_security_group" "ec2_sg" {
     Name = "ec2-sg"
   }
 }
-resource "aws_eip" "lb" {
-  domain   = "vpc"
-  tags = {
-    Name = "my-eip"
-  }
-}
-resource "aws_nat_gateway" "example" {
-  allocation_id = aws_eip.lb.id
-  subnet_id     = aws_subnet.subnet_1.id
-  tags = {
-    Name = "gw NAT"
-  }
-  depends_on = [aws_internet_gateway.gw]
-}
+# resource "aws_eip" "lb" {
+#   domain   = "vpc"
+#   tags = {
+#     Name = "my-eip"
+#   }
+# }
+# resource "aws_nat_gateway" "example" {
+#   allocation_id = aws_eip.lb.id
+#   subnet_id     = aws_subnet.subnet_1.id
+#   tags = {
+#     Name = "gw NAT"
+#   }
+#   depends_on = [aws_internet_gateway.gw]
+# }
 
 
 # Create a Jume server
@@ -131,10 +131,10 @@ resource "aws_instance" "jume" {
   }
   user_data = <<-EOF
               #!/bin/bash
+              yum install java -y
               curl -o https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
               tar -xzvf apache-tomcat-9.0.115.tar.gz -C /opt
               cd /opt/apache-tomcat-9.0.115/bin
-              yum install java -y
               ./catalina.sh start
               cd /opt/apache-tomcat-9.0.115/webapps
               curl -o https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
@@ -144,7 +144,7 @@ resource "aws_instance" "jume" {
 
 # Create a application server.
 resource "aws_instance" "application_server" {
-    ami = var.application_server-ami
+    ami = var.application_server_ami
     instance_type = var.application_server_instance_type
     subnet_id = aws_subnet.subnet_2.id
     vpc_security_group_ids = [aws_security_group.ec2_sg.id]
