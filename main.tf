@@ -154,19 +154,6 @@ resource "aws_instance" "jume" {
     
     EOF
 }
-
-# create a RDS database instance.
-resource "aws_db_instance" "mydb" {
-  allocated_storage    = 10
-  db_name              = "mydb"
-  engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t4g.micro"
-  username             = "admin"
-  password             = "admin123"
-  db_subnet_group_name = aws_subnet.subnet_2.id
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-}
 resource "aws_db_subnet_group" "db_subnet" {
   name       = "main"
   # vpc_id      = aws_vpc.main.id
@@ -177,6 +164,20 @@ resource "aws_db_subnet_group" "db_subnet" {
     Name = "DB subnet group"
   }
 }
+
+# create a RDS database instance.
+resource "aws_db_instance" "mydb" {
+  allocated_storage    = 10
+  db_name              = "mydb"
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t4g.micro"
+  username             = "admin"
+  password             = "admin123"
+  db_subnet_group_name = aws_db_subnet_group.db_subnet.id
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+}
+
 
 # Create a database server.
 resource "aws_instance" "application_server" {
