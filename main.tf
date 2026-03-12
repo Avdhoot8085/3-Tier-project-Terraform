@@ -156,7 +156,7 @@ curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
 
 mv student.war /opt/apache-tomcat-9.0.115/webapps/
 
-FILE="/opt/apache-tomcat-9.0.115/conf/context.xml"
+touch /opt/apache-tomcat-9.0.115/conf/context.xml
 
 sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' \$FILE
 
@@ -168,7 +168,7 @@ yum install mariadb105* -y
 systemctl start mariadb.service
 systemctl enable mariadb.service
 
-mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 
+mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 <<MYSQL_SCRIPT
 
 create database studentapp;
 
@@ -183,6 +183,7 @@ student_qual VARCHAR(20) NOT NULL,
 student_percent VARCHAR(10) NOT NULL,
 student_year_passed VARCHAR(10) NOT NULL,
 PRIMARY KEY (student_id)
+);
     EOF
 }
 resource "aws_db_subnet_group" "db_subnet" {
