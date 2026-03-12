@@ -144,9 +144,12 @@ resource "aws_instance" "jume" {
     yum install java -y
     curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
     tar -xzvf apache-tomcat-9.0.115.tar.gz -C /opt
-    /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+    cd /opt/apache-tomcat-9.0.115/bin/ && ./catalina.sh start
     cd /opt/apache-tomcat-9.0.115/webapps/
     curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+
+    /opt/apache-tomcat-9.0.115/bin/shutdown.sh
+    /opt/apache-tomcat-9.0.115/bin/startup.sh
     EOF
 }
 # resource "aws_db_subnet_group" "db_subnet" {
