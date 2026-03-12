@@ -148,8 +148,8 @@ resource "aws_instance" "jume" {
     cd /opt/apache-tomcat-9.0.115/webapps/
     curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
 
-    /opt/apache-tomcat-9.0.115/bin/shutdown.sh
-    /opt/apache-tomcat-9.0.115/bin/startup.sh
+    /opt/apache-tomcat-9.0.115/bin/restart
+    /opt/apache-tomcat-9.0.115/bin/start
     EOF
 }
 # resource "aws_db_subnet_group" "db_subnet" {
