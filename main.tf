@@ -168,46 +168,30 @@ yum install mariadb105* -y
 systemctl start mariadb.service
 systemctl enable mariadb.service
 
-mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 <<MYSQL_SCRIPT
-
-create database studentapp;
-
-use studentapp;
-
-CREATE TABLE if not exists students(
-student_id INT NOT NULL AUTO_INCREMENT,
-student_name VARCHAR(100) NOT NULL,
-student_addr VARCHAR(100) NOT NULL,
-student_age VARCHAR(3) NOT NULL,
-student_qual VARCHAR(20) NOT NULL,
-student_percent VARCHAR(10) NOT NULL,
-student_year_passed VARCHAR(10) NOT NULL,
-PRIMARY KEY (student_id)
-);
     EOF
 }
-resource "aws_db_subnet_group" "db_subnet" {
-  name       = "main"
+# resource "aws_db_subnet_group" "db_subnet" {
+#   name       = "main"
   
-  subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
-  tags = {
-    Name = "DB subnet group-1"
-  }
-}
+#   subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
+#   tags = {
+#     Name = "DB subnet group-1"
+#   }
+# }
 
-# create a RDS database instance.
-resource "aws_db_instance" "mydb" {
-  allocated_storage    = 10
-  db_name              = "mydb"
-  engine               = "mysql"
-  engine_version       = "8.0"
-  instance_class       = "db.t4g.micro"
-  username             = "admin"
-  password             = "admin123"
-  db_subnet_group_name = aws_db_subnet_group.db_subnet.name
-  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
-  skip_final_snapshot = true
-}
+# # create a RDS database instance.
+# resource "aws_db_instance" "mydb" {
+#   allocated_storage    = 10
+#   db_name              = "mydb"
+#   engine               = "mysql"
+#   engine_version       = "8.0"
+#   instance_class       = "db.t4g.micro"
+#   username             = "admin"
+#   password             = "admin123"
+#   db_subnet_group_name = aws_db_subnet_group.db_subnet.name
+#   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+#   skip_final_snapshot = true
+# }
 
 
 # # Create a database server.
@@ -241,3 +225,39 @@ resource "aws_db_instance" "mydb" {
 
 #               EOF
 # }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 <<MYSQL_SCRIPT
+
+# create database studentapp;
+
+# use studentapp;
+
+# CREATE TABLE if not exists students(
+# student_id INT NOT NULL AUTO_INCREMENT,
+# student_name VARCHAR(100) NOT NULL,
+# student_addr VARCHAR(100) NOT NULL,
+# student_age VARCHAR(3) NOT NULL,
+# student_qual VARCHAR(20) NOT NULL,
+# student_percent VARCHAR(10) NOT NULL,
+# student_year_passed VARCHAR(10) NOT NULL,
+# PRIMARY KEY (student_id)
+# );
