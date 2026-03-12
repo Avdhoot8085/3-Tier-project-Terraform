@@ -158,15 +158,7 @@ mv student.war /opt/apache-tomcat-9.0.115/webapps/
 
 touch /opt/apache-tomcat-9.0.115/conf/context.xml
 
-sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' \$FILE
 
-/opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
-/opt/apache-tomcat-9.0.115/bin/./catalina.sh start
-
-yum install mariadb105* -y
-
-systemctl start mariadb.service
-systemctl enable mariadb.service
 
     EOF
 }
@@ -242,7 +234,15 @@ systemctl enable mariadb.service
 
 
 
+# sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' \$FILE
 
+# /opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
+# /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+
+# yum install mariadb105* -y
+
+# systemctl start mariadb.service
+# systemctl enable mariadb.service
 
 
 # mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 <<MYSQL_SCRIPT
