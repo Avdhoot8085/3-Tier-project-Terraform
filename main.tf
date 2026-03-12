@@ -190,7 +190,7 @@ resource "aws_db_subnet_group" "db_subnet" {
   
   subnet_ids = [aws_subnet.subnet_1.id, aws_subnet.subnet_2.id]
   tags = {
-    Name = "DB subnet group"
+    Name = "DB subnet group-1"
   }
 }
 
