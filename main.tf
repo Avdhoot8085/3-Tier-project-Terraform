@@ -168,7 +168,7 @@ yum install mariadb105* -y
 systemctl start mariadb.service
 systemctl enable mariadb.service
 
-mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 <<MYSQL_SCRIPT
+mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 
 
 create database studentapp;
 
