@@ -141,34 +141,48 @@ resource "aws_instance" "jume" {
   }
  user_data = <<-EOF
     #!/bin/bash
-    yum install java -y
-    curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
-    tar -xzvf apache-tomcat-9.0.115.tar.gz -C /opt
-    /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
-    cd /opt/apache-tomcat-9.0.115/webapps/
-    curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
-    mv student.war /opt/apache-tomcat-9.0.115/webapps/
-    FILE="/opt/tomcat/conf/context.xml"
-    sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' $FILE
-    /opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
-    /opt/apache-tomcat-9.0.115/bin/./catalina.sh start
 
-    
-    yum install mariadb105* -y
-    systemctl start mariadb.service
-    systemctl enable mariadb.service
-    mysql -h ${aws_db_instance.mydb.endpoint} -u admin -admin123
-    create database studentapp;
-    use studentapp;
-    CREATE TABLE if not exists students(student_id INT NOT NULL AUTO_INCREMENT,
-	  student_name VARCHAR(100) NOT NULL,
-    student_addr VARCHAR(100) NOT NULL,
-  	student_age VARCHAR(3) NOT NULL,
-	  student_qual VARCHAR(20) NOT NULL,
-	  student_percent VARCHAR(10) NOT NULL,
-  	student_year_passed VARCHAR(10) NOT NULL,
-	  PRIMARY KEY (student_id)
-    
+yum install java -y
+
+curl -O https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.115/bin/apache-tomcat-9.0.115.tar.gz
+
+tar -xzvf apache-tomcat-9.0.115.tar.gz -C /opt
+
+/opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+
+cd /opt/apache-tomcat-9.0.115/webapps/
+
+curl -O https://s3-us-west-2.amazonaws.com/studentapi-cit/student.war
+
+mv student.war /opt/apache-tomcat-9.0.115/webapps/
+
+FILE="/opt/apache-tomcat-9.0.115/conf/context.xml"
+
+sed -i '$i <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="500" maxIdle="30" maxWaitMillis="1000" username="arya" password="Aryakadam47" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://${aws_db_instance.mydb.endpoint}:3306/studentapp?useUnicode=yes&characterEncoding=utf8"/>' \$FILE
+
+/opt/apache-tomcat-9.0.115/bin/./catalina.sh stop
+/opt/apache-tomcat-9.0.115/bin/./catalina.sh start
+
+yum install mariadb105* -y
+
+systemctl start mariadb.service
+systemctl enable mariadb.service
+
+mysql -h ${aws_db_instance.mydb.endpoint} -u admin -padmin123 <<MYSQL_SCRIPT
+
+create database studentapp;
+
+use studentapp;
+
+CREATE TABLE if not exists students(
+student_id INT NOT NULL AUTO_INCREMENT,
+student_name VARCHAR(100) NOT NULL,
+student_addr VARCHAR(100) NOT NULL,
+student_age VARCHAR(3) NOT NULL,
+student_qual VARCHAR(20) NOT NULL,
+student_percent VARCHAR(10) NOT NULL,
+student_year_passed VARCHAR(10) NOT NULL,
+PRIMARY KEY (student_id)
     EOF
 }
 resource "aws_db_subnet_group" "db_subnet" {
